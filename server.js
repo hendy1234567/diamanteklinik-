@@ -3,8 +3,17 @@ const cors = require('cors');
 const mysql = require('mysql2');
 const session = require('express-session');
 const path = require('path');
+const http = require('http');
+const { Server } = require('socket.io');
 
 const app = express();
+const server = http.createServer(app);
+
+const io = new Server(server, {
+  cors: {
+    origin: "*"
+  }
+});
 
 app.use(cors());
 app.use(express.json());
@@ -32,11 +41,9 @@ db.connect((err) => {
   }
 });
 
-
 app.get('/', (req, res) => {
   res.send('Server jalan');
 });
-
 
 app.post('/login', (req, res) => {
 
@@ -133,6 +140,11 @@ app.post('/reservations', (req, res) => {
 
       }
 
+      io.emit("reservationBaru", {
+        nama: name,
+        email: email
+      });
+
       res.json({
         message: 'Berhasil disimpan ke database'
       });
@@ -185,8 +197,16 @@ app.delete('/reservations/:id', isLogin, (req, res) => {
 
 });
 
+io.on("connection", (socket) => {
+  console.log("Admin terhubung :", socket.id);
+
+  socket.on("disconnect", () => {
+    console.log("Admin keluar :", socket.id);
+  });
+});
+
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server berjalan di port ${PORT}`);
 });

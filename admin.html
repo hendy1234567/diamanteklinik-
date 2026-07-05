@@ -3,13 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <title>Admin Dashboard</title>
+
   <style>
-    body { font-family: Arial; padding: 20px; }
-    table { border-collapse: collapse; width: 100%; }
-    th, td { border: 1px solid #ccc; padding: 10px; }
-    th { background: #f4f4f4; }
-    button { padding: 5px 10px; cursor: pointer; }
+    body {
+      font-family: Arial;
+      padding: 20px;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    th,
+    td {
+      border: 1px solid #ccc;
+      padding: 10px;
+    }
+
+    th {
+      background: #f4f4f4;
+    }
+
+    button {
+      padding: 5px 10px;
+      cursor: pointer;
+    }
   </style>
+
 </head>
 <body>
 
@@ -31,67 +52,125 @@
       <th>Aksi</th>
     </tr>
   </thead>
+
   <tbody></tbody>
+
 </table>
 
+<script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+
 <script>
+
+const socket = io("https://diamanteklinik-production.up.railway.app");
+
+socket.on("reservationBaru", (data) => {
+
+  alert("🔔 Reservation baru dari " + data.nama);
+
+  loadData();
+
+});
+
 async function loadData() {
+
   try {
+
     const res = await fetch("https://diamanteklinik-production.up.railway.app/reservations");
 
     if (res.status === 401) {
-      alert('Login dulu!');
-      window.location.href = 'login.html';
+
+      alert("Login dulu!");
+
+      window.location.href = "login.html";
+
       return;
+
     }
 
     const data = await res.json();
 
-    const tbody = document.querySelector('#tableData tbody');
-    tbody.innerHTML = '';
+    const tbody = document.querySelector("#tableData tbody");
+
+    tbody.innerHTML = "";
 
     data.forEach(item => {
-      const row = `
+
+      tbody.innerHTML += `
         <tr>
+
           <td>${item.id}</td>
+
           <td>${item.name}</td>
+
           <td>${item.email}</td>
+
           <td>${item.keperluan}</td>
+
           <td>${item.pesan}</td>
+
           <td>${item.phone}</td>
+
           <td>
-            <button onclick="hapus(${item.id})">Hapus</button>
+
+            <button onclick="hapus(${item.id})">
+              Hapus
+            </button>
+
           </td>
+
         </tr>
       `;
-      tbody.innerHTML += row;
+
     });
 
-  } catch (err) {
-    alert('Gagal ambil data');
-    console.log(err);
   }
+
+  catch(err){
+
+    console.log(err);
+
+    alert("Gagal mengambil data.");
+
+  }
+
 }
 
-async function hapus(id) {
-  if (!confirm('Yakin mau hapus?')) return;
+async function hapus(id){
 
-  await fetch(`https://diamanteklinik-production.up.railway.app/reservations/${id}`, {
-    method: 'DELETE'
-  });
+  if(!confirm("Yakin ingin menghapus data ini?")) return;
+
+  await fetch(
+
+    `https://diamanteklinik-production.up.railway.app/reservations/${id}`,
+
+    {
+
+      method:"DELETE"
+
+    }
+
+  );
 
   loadData();
+
 }
 
-function logout() {
-  fetch('https://diamanteklinik-production.up.railway.app/logout')
-    .then(() => {
-      alert('Logout berhasil');
-      window.location.href = 'login.html';
-    });
+function logout(){
+
+  fetch("https://diamanteklinik-production.up.railway.app/logout")
+
+  .then(()=>{
+
+    alert("Logout berhasil");
+
+    window.location.href="login.html";
+
+  });
+
 }
 
 loadData();
+
 </script>
 
 </body>
