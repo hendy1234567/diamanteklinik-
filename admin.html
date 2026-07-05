@@ -37,7 +37,7 @@
 <script>
 async function loadData() {
   try {
-    const res = await fetch('http://localhost:3000/reservations');
+    const res = await fetch("https://diamanteklinik-production.up.railway.app/reservations");
 
     if (res.status === 401) {
       alert('Login dulu!');
@@ -76,7 +76,7 @@ async function loadData() {
 async function hapus(id) {
   if (!confirm('Yakin mau hapus?')) return;
 
-  await fetch(`http://localhost:3000/reservations/${id}`, {
+  await fetch(`https://diamanteklinik-production.up.railway.app/reservations/${id}`, {
     method: 'DELETE'
   });
 
@@ -84,7 +84,7 @@ async function hapus(id) {
 }
 
 function logout() {
-  fetch('http://localhost:3000/logout')
+  fetch('https://diamanteklinik-production.up.railway.app/logout')
     .then(() => {
       alert('Logout berhasil');
       window.location.href = 'login.html';
